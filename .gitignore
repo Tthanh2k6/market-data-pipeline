@@ -36,3 +36,7 @@ logs/
 Thumbs.db
 .vscode/
 .idea/
+
+# local notes
+agy_log*.txt
+SPEC.md
