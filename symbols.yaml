@@ -1,0 +1,70 @@
+symbols:
+  # Indices
+  - asset_class: indices
+    symbol: SPX
+    source: yfinance
+    provider_symbol: "^GSPC"
+  - asset_class: indices
+    symbol: NDX
+    source: yfinance
+    provider_symbol: "^NDX"
+
+  # Forex
+  - asset_class: forex
+    symbol: EURUSD
+    source: yfinance
+    provider_symbol: "EURUSD=X"
+  - asset_class: forex
+    symbol: USDJPY
+    source: yfinance
+    provider_symbol: "USDJPY=X"
+
+  # Crypto (Binance public klines)
+  - asset_class: crypto
+    symbol: BTCUSDT
+    source: binance
+    provider_symbol: "BTCUSDT"
+  - asset_class: crypto
+    symbol: ETHUSDT
+    source: binance
+    provider_symbol: "ETHUSDT"
+
+  # Commodities
+  - asset_class: commodities
+    symbol: CL
+    source: yfinance
+    provider_symbol: "CL=F"
+  - asset_class: commodities
+    symbol: NG
+    source: yfinance
+    provider_symbol: "NG=F"
+
+  # Metals
+  - asset_class: metals
+    symbol: GC
+    source: yfinance
+    provider_symbol: "GC=F"
+  - asset_class: metals
+    symbol: SI
+    source: yfinance
+    provider_symbol: "SI=F"
+
+  # Bonds / Rates
+  - asset_class: bonds
+    symbol: TNX
+    source: yfinance
+    provider_symbol: "^TNX"
+  - asset_class: bonds
+    symbol: TYX
+    source: yfinance
+    provider_symbol: "^TYX"
+
+  # Volatility
+  - asset_class: volatility
+    symbol: VIX
+    source: yfinance
+    provider_symbol: "^VIX"
+  - asset_class: volatility
+    symbol: VXN
+    source: yfinance
+    provider_symbol: "^VXN"

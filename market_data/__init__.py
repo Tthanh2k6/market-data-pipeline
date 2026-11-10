@@ -1,0 +1,6 @@
+"""Market data pipeline: fetch, normalize, validate, enrich, and store OHLCV bars."""
+
+from __future__ import annotations
+
+__all__ = ["__version__"]
+__version__ = "0.1.0"
