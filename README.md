@@ -8,7 +8,7 @@ A small Python pipeline that downloads free OHLCV market data from Yahoo Finance
 - `market_data/config.py` - Loads and validates `symbols.yaml` into `Symbol` records.
 - `market_data/sources.py` - Fetches raw data from `yfinance` and Binance REST klines with timeouts and exponential-backoff retries.
 - `market_data/transform.py` - Pure functions to normalize source schemas to UTC `[ts, open, high, low, close, volume]` and resample `1H` bars into `4H` bars anchored at `00:00` UTC.
-- `market_data/validate.py` - Pure validation that drops duplicate timestamps, `NaN` OHLC rows, invalid OHLC bounds, and negative volume, and logs gaps larger than `3x` the timeframe.
+- `market_data/validate.py` - Pure validation that drops duplicate timestamps, `NaN` OHLC rows and negative volume, repairs bars whose open/close sit within 0.1% outside high/low (a quirk of free FX feeds), drops larger OHLC violations, and logs gaps larger than `3x` the timeframe.
 - `market_data/indicators.py` - Pure-pandas calculation of `sma_20`, `sma_50`, `ema_20`, Wilder `rsi_14`, and Wilder `atr_14`.
 - `market_data/store.py` - Builds JSON-safe payloads and upserts batches of 500 rows to Supabase PostgREST (`on_conflict=symbol,timeframe,ts`).
 - `market_data/run.py` - CLI entrypoint with per-symbol error isolation and `--dry-run` mode.

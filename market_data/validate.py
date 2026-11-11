@@ -32,6 +32,9 @@ def _effective_gap(t0: pd.Timestamp, t1: pd.Timestamp, *, exclude_weekends: bool
     return pd.Timedelta(seconds=max(0.0, secs))
 
 
+OHLC_REPAIR_TOLERANCE = 0.001  # 0.1% of close
+
+
 def validate(
     df: pd.DataFrame,
     timeframe: str,
@@ -78,6 +81,23 @@ def validate(
     # 3. Impossible OHLC bounds and negative volume.
     bar_max_oc = clean[["open", "close"]].max(axis=1)
     bar_min_oc = clean[["open", "close"]].min(axis=1)
+    # Free FX/index feeds sometimes report a close a few hundredths of a percent
+    # outside the high/low (different snapshot times). Repair those tiny gaps by
+    # widening high/low instead of dropping the whole bar; larger gaps are dropped.
+    tolerance = OHLC_REPAIR_TOLERANCE * clean["close"].abs()
+    high_gap = bar_max_oc - clean["high"]
+    low_gap = clean["low"] - bar_min_oc
+    repair_mask = ((high_gap > 0) | (low_gap > 0)) & (high_gap <= tolerance) & (low_gap <= tolerance)
+    repair_count = int(repair_mask.sum())
+    if repair_count > 0:
+        clean.loc[repair_mask, "high"] = clean.loc[repair_mask, ["high", "open", "close"]].max(axis=1)
+        clean.loc[repair_mask, "low"] = clean.loc[repair_mask, ["low", "open", "close"]].min(axis=1)
+        issues.append(
+            f"Repaired {repair_count} row(s) whose open/close sat within "
+            f"{OHLC_REPAIR_TOLERANCE:.1%} outside high/low"
+        )
+        bar_max_oc = clean[["open", "close"]].max(axis=1)
+        bar_min_oc = clean[["open", "close"]].min(axis=1)
     bad_ohlc_mask = (clean["high"] < bar_max_oc) | (clean["low"] > bar_min_oc)
     bad_ohlc_count = int(bad_ohlc_mask.sum())
     if bad_ohlc_count > 0:

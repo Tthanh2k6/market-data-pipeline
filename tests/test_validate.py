@@ -137,3 +137,18 @@ def test_overnight_close_is_not_reported_as_gap_for_non_crypto_4h():
     assert not any("Gap" in i for i in issues)
     _, issues = validate(df, timeframe="4H", asset_class="crypto")
     assert any("Gap" in i for i in issues)
+
+
+def test_validate_repairs_tiny_ohlc_gaps_from_fx_feeds() -> None:
+    # Real shape seen on Yahoo EURUSD=X 1D (2026-11-02): low 1.11572 > close 1.11569.
+    df = _make_bars(
+        [
+            ("2026-11-02 00:00:00", 1.11572, 1.12368, 1.11572, 1.11569, 0.0),
+            ("2026-11-03 00:00:00", 1.11932, 1.12057, 1.11757, 1.11921, 0.0),
+        ]
+    )
+    clean, issues = validate(df, timeframe="1D")
+    assert len(clean) == 2
+    assert clean.iloc[0]["low"] == 1.11569
+    assert any("Repaired 1 row(s)" in msg for msg in issues)
+    assert not any("invalid OHLC bounds" in msg for msg in issues)
